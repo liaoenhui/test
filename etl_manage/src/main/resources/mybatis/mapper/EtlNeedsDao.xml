@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zysj.etl_manage.dao.EtlNeedsDao">
+
+    <!--&lt;!&ndash; 获取到需要生成etl脚本的一些参数 用来生成json脚本 &ndash;&gt;-->
+    <!--<select id="getEtlInfo"  resultType="list" parameterType="String">-->
+    <!--SELECT * FROM etl_view WHERE  TABLE_ID= #{TABLE_ID}-->
+    <!--</select>-->
+    <select id="etlTagSh" resultType="com.zysj.etl_manage.entity.TagSh">
+        SELECT * FROM tb_object_tag_sh WHERE SH_STATUS= #{SH_STATUS}
+    </select>
+    <update id="updateShStaTus" parameterType="String">
+        update tb_object_tag_sh set SH_STATUS=0 where SH_ID = #{LOSTPROMIEID}
+    </update>
+
+    <update id="updateScriptStaTus" parameterType="String">
+        update tb_object_syncopt set sync_script=1 where opt_id = #{optId}
+    </update>
+
+</mapper>

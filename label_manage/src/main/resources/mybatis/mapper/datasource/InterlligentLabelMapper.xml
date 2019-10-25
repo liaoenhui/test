@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.IntelligentLabelDao">
+
+
+
+
+    <!--获取字典表信息列表-->
+    <select id="getObjectList" resultType="map" >
+        SELECT
+        *
+        FROM
+        tb_tag_object
+        WHERE
+        OBJECT_TYPE=0
+    </select>
+    <!--获取标签信息列表(根据主体查询)-->
+    <select id="getSubjectLabel" resultType="java.util.Map" parameterType="String">
+    SELECT
+	*
+    FROM
+	tb_tag_object_tag
+
+    WHERE
+    OBJECT_ID = #{ObjectId}
+     </select>
+</mapper>

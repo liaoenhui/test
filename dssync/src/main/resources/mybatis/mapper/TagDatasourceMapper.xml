@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zysj.dssync.dao.TagDatasourceMapper">
+    <select id="listAll" resultType="com.zysj.dssync.entity.Datasource">
+        select * from tb_datasource
+    </select>
+    <select id="listNeedSync" resultType="com.zysj.dssync.entity.Datasource">
+        select * from tb_datasource where DS_SYNC_STATE in (0,3)
+    </select>
+    <select id="listStates" resultType="com.zysj.dssync.entity.Datasource">
+        select * from tb_datasource where DS_SYNC_STATE in
+        <foreach collection="states" item="state" separator="," open="(" close=")">
+            #{state}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.DetailsSubjectDao">
+
+    <!--新增字典表数据-->
+    <insert id="addTagDicInfo" parameterType="List">
+        insert into tb_tag_dic (
+        dic_name,
+        `value`,
+        `key`,
+        `desc`,
+        dic_code
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+
+            #{item.dic_name},
+            #{item.value},
+            #{item.key},
+            #{item.desc},
+            #{item.dic_code}
+
+            )
+        </foreach>
+
+
+    </insert>
+    <!--新增标签类目数据-->
+    <insert id="addLabelCategory" parameterType="com.zysj.label_manage.entity.TagDic">
+        insert into td_tag_object_tag_class (
+        TAG_CLASS_ID,
+        TAG_CLASS_NAME,
+        CREATE_P_ID,
+        CREATE_P_NAME,
+        CREATE_TIME,
+        DESCRIPTION,
+        PARENT_ID
+        ) values (
+        #{TAG_CLASS_ID},
+        #{TAG_CLASS_NAME},
+        #{CREATE_P_ID},
+        #{CREATE_P_NAME},
+        #{CREATE_TIME},
+        #{DESCRIPTION},
+        #{PARENT_ID}
+
+        )
+    </insert>
+    <!--修改字典表-->
+    <update id="editTagDicInfo" parameterType="List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            update
+            tb_tag_dic
+            set
+            dic_name = #{item.dic_name} ,
+            `value` = #{item.value} ,
+            `key` = #{item.key} ,
+            dic_code=#{item.dic_code} ,
+            `desc` = #{item.desc}
+            where
+            dic_id = ${item.dic_id}
+        </foreach>
+    </update>
+    <!--修改标签表-->
+    <update id="editModifyLabelsInfo" parameterType="com.zysj.label_manage.entity.TagObjectTag">
+       update
+            tb_tag_object_tag
+        set
+            TAG_NAME = #{TAG_NAME},
+            TAG_CODE = #{TAG_CODE},
+            REF_OBJECT_ID=#{REF_OBJECT_ID},
+            TAG_CLASS_ID = #{TAG_CLASS_ID},
+            TAG_CLASS_NAME = #{TAG_CLASS_NAME},
+            DATA_TYPE = #{DATA_TYPE},
+            dic_id = #{dic_id},
+            DESCRIPTION = #{DESCRIPTION},
+            IS_MAIN_TAG = #{IS_MAIN_TAG}
+        where
+            TAG_ID = #{TAG_ID}
+    </update>
+    <!--获取字典表信息列表-->
+    <select id="getDictionaryList" resultType="map" parameterType="String">
+         SELECT
+
+        distinct dic_name,
+        dic_code
+        FROM
+        tb_tag_dic
+				WHERE
+				dic_name LIKE '%${dic_name}%'
+    </select>
+    <!--获取字典表是否包含该字典名-->
+    <select id="getDictionaryTableList" resultType="map" parameterType="String">
+        SELECT
+        distinct dic_name
+        FROM
+        tb_tag_dic
+        WHERE
+        dic_name =#{dic_name}
+    </select>
+    <!--获取标签表是否包含该标签code-->
+    <select id="getDictionaryTagList" resultType="map" parameterType="String">
+        SELECT
+        *
+        FROM
+        tb_tag_object_tag
+        WHERE
+        TAG_CODE =#{tag_code}
+        and
+        OBJECT_ID=#{objectId}
+        <if test="tag_id !=null and tag_id !=''">
+            AND
+            TAG_ID !=#{tag_id}
+        </if>
+
+    </select>
+    <!--获取字典表信息列表-->
+    <select id="getDictionaryListInfo" resultType="map" parameterType="String">
+        SELECT
+        *
+        FROM
+        tb_tag_dic
+        WHERE
+        dic_name = #{dic_name}
+    </select>
+    <!--查询树列表-->
+    <select id="getTagNode" resultType="java.util.Map" parameterType="String">
+       SELECT
+        a.*
+        FROM
+          td_tag_object_tag_class a
+					 join
+		 tb_tag_object_tag b on a.TAG_CLASS_ID=b.TAG_CLASS_ID
+		join tb_tag_object c on c.OBJECT_ID=b.OBJECT_ID
+		WHERE c.OBJECT_ID =#{OBJECT_ID}
+		AND  a.PARENT_ID=#{TAG_CLASS_ID}
+		GROUP BY
+		  a.TAG_CLASS_ID
+    </select>
+    <!--查询主体 node 层关系 关联-->
+    <select id="getObjectTagList" resultType="java.util.Map">
+                  SELECT
+      (
+		CASE `OBJECT_TYPE`
+			WHEN 0 THEN 0
+			WHEN 1 THEN 1
+			ELSE NULL
+		END
+	) category ,
+       OBJECT_NAME as `name`,
+			 concat('obj_',object_id) as id
+        FROM
+        tb_tag_object
+UNION ALL
+  SELECT
+		(
+		CASE `IS_MAIN_TAG`
+			WHEN 0 THEN 3
+			WHEN 1 THEN 2
+			ELSE NULL
+		END
+	)  category,
+
+        TAG_NAME as `name`,
+				concat('tag_',tag_id) as id
+
+
+        FROM
+        tb_tag_object_tag
+    </select>
+    <!--查询主体 links 层关系 关联-->
+    <select id="getSubjectTagList" resultType="java.util.Map">
+         select  a.r_id as source, concat('obj_',b.OBJECT_ID) as target from (
+ select concat('obj_',object_id) r_id,object_name r_name,main_object_id object_id from tb_tag_object where OBJECT_TYPE = 1
+ union
+  select concat('obj_',object_id),object_name r_name,ref_object_id from tb_tag_object where OBJECT_TYPE = 1) a
+	join tb_tag_object b on a.OBJECT_ID = b.OBJECT_ID
+	UNION
+	select  concat('obj_',b.OBJECT_id) as source, concat('tag_',a.TAG_id) as target from tb_tag_object_tag a
+ JOIN
+   tb_tag_object b on a.OBJECT_ID=b.OBJECT_ID
+
+
+    </select>
+    <!--查询主体下的标签-->
+    <select id="getSearchTag" resultType="java.util.Map">
+      SELECT
+        *
+        FROM
+          tb_tag_object_tag
+					WHERE
+					OBJECT_ID=#{OBJECT_ID}
+
+    </select>
+    <!--查询主体详情-->
+    <select id="getSearchTable" resultType="java.util.Map" parameterType="String">
+   SELECT
+	a.*,
+	date_format(a.CREATE_TIME, '%Y-%c-%d %h:%i:%s' ) as post_date ,
+	count( c.TAG_ID ) as TAG_COUNT ,
+    count(b.TABLE_ID) as TABLE_COUNT,
+		GROUP_CONCAT(c.TAG_NAME Separator ',') as TAG_NAME
+    FROM
+	tb_tag_object a
+	 JOIN tb_tag_object_table b ON a.OBJECT_ID = b.OBJECT_ID
+	 JOIN tb_tag_object_tag c ON b.table_id = c.TABLE_ID and a.OBJECT_ID = c.OBJECT_ID
+	WHERE a.OBJECT_ID =#{OBJECT_ID}
+	 AND c.IS_MAIN_TAG=1
+   GROUP BY
+	a.OBJECT_ID
+    </select>
+    <!--查询类目下的标签数据-->
+    <select id="getTagDetails" resultType="java.util.Map" parameterType="String">
+   SELECT
+        a.*
+        FROM
+          tb_tag_object_tag a
+		  join
+		 tb_tag_object b on a.OBJECT_ID=b.OBJECT_ID
+       WHERE b.OBJECT_ID =#{OBJECT_ID}
+		AND a.TAG_CLASS_ID=#{TAG_CLASS_ID}
+
+    </select>
+
+</mapper>

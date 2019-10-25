@@ -1,0 +1,37 @@
+
+server:
+  port: 18801
+spring:
+  profiles:
+    active: local
+  cloud:
+    consul:
+      host: 47.100.122.117
+      port: 8500
+      discovery:
+      #设置不需要注册到 consul 中 我只调用服务不需要向外输出接口
+        register: false
+  application:
+    name: label_manage
+  jackson:
+    defaultPropertyInclusion: ALWAYS
+  datasource:
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://47.100.123.80:3306/tag_system?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+          username: root
+          password: Zysj@123
+static.serviceType: proxy
+
+# 解决通过serviceId 找不到服务
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+
+#ribbon:
+#  eureka:
+#    enabled: true
+
+#访问超时时间 6s
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 6000
+logging:
+  level: debug

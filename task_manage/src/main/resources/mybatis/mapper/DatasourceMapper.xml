@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.DatasourceDao" >
+
+    <!--新增数据源-->
+    <insert id="addDatasourceInfo" parameterType="map">
+        insert into tb_datasource (
+            DS_ID,
+            DS_ENAME,
+            DS_CNAME,
+            DS_TYPE,
+            DS_IP,
+            DS_PORT,
+            DS_USERNAME,
+            DS_PASSWORD,
+            DS_ENDPOINT,
+            DS_ACCESSKEY,
+            DS_ACCESS_SECRET,
+            DS_VERSION_ID,
+            DS_OPERATOR,
+            DS_UPDATETIME
+        ) values (
+            #{DS_ID},
+            #{DS_ENAME},
+            #{DS_CNAME},
+            #{DS_TYPE},
+            #{DS_IP},
+            #{DS_PORT},
+            #{DS_USERNAME},
+            #{DS_PASSWORD},
+            #{DS_ENDPOINT},
+            #{DS_ACCESSKEY},
+            #{DS_ACCESS_SECRET},
+            #{DS_VERSION_ID},
+            #{DS_OPERATOR},
+            #{DS_UPDATETIME}
+        )
+    </insert>
+
+    <!--修改数据源-->
+    <update id="editDatasourceInfo" parameterType="map">
+        update
+            tb_datasource
+        set
+            DS_ENAME #{DS_ENAME},
+            DS_CNAME #{DS_CNAME},
+            DS_TYPE #{DS_TYPE},
+            DS_IP #{DS_IP},
+            DS_PORT #{DS_PORT},
+            DS_USERNAME #{DS_USERNAME},
+            DS_PASSWORD #{DS_PASSWORD},
+            DS_ENDPOINT #{DS_ENDPOINT},
+            DS_ACCESSKEY #{DS_ACCESSKEY},
+            DS_ACCESS_SECRET #{DS_ACCESS_SECRET},
+            DS_VERSION_ID #{DS_VERSION_ID},
+            DS_OPERATOR #{DS_OPERATOR},
+            DS_UPDATETIME #{DS_UPDATETIME}
+        where
+            DS_ID = #{DS_ID}
+    </update>
+
+
+    <!--获取数据源列表-->
+    <select id="getDatasourceList" resultType="java.util.Map">
+        select
+            DS_ID,
+            DS_ENAME,
+            DS_CNAME,
+            DS_TYPE,
+            DS_IP,
+            DS_PORT,
+            DS_USERNAME,
+            DS_PASSWORD,
+            DS_ENDPOINT,
+            DS_ACCESSKEY,
+            DS_ACCESS_SECRET,
+            DS_VERSION_ID,
+            DS_OPERATOR,
+            DS_UPDATETIME
+        from
+          tb_datasource
+    </select>
+
+    <!--获取单个数据源信息-->
+    <select id="getDatasourceInfo" resultType="map" parameterType="map">
+        select
+            DS_ID,
+            DS_ENAME,
+            DS_CNAME,
+            DS_TYPE,
+            DS_IP,
+            DS_PORT,
+            DS_USERNAME,
+            DS_PASSWORD,
+            DS_ENDPOINT,
+            DS_ACCESSKEY,
+            DS_ACCESS_SECRET,
+            DS_VERSION_ID,
+            DS_OPERATOR,
+            DS_UPDATETIME
+        from
+            tb_datasource
+        where
+            DS_ID = #{DS_ID}
+    </select>
+</mapper>

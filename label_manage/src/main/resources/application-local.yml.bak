@@ -1,0 +1,34 @@
+
+mybatis-plus:
+  mapper-locations: classpath:mybatis/mapper/datasource/*.xml
+  type-aliases-package: com.zysj.label_manage.entity
+  configuration:
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
+
+
+
+
+logging:
+  level:
+    root: INFO
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+    com.springms: DEBUG
+
+
+
+feign:
+  hystrix:
+    enabled: true
+
+
+
+
+
+
+

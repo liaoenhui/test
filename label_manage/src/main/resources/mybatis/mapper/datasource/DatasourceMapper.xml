@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.DatasourceDao"  >
+
+    <!--新增数据源-->
+    <insert id="addDatasourceInfo" parameterType="com.zysj.label_manage.entity.DataSource">
+        insert into tb_datasource (
+            DS_ID,
+            DS_ENAME,
+            DS_CNAME,
+            DS_TYPE,
+            DS_IP,
+            DS_PORT,
+            DS_USERNAME,
+            DS_PASSWORD,
+            DS_ENDPOINT,
+            DS_ACCESSKEY,
+            DS_ACCESS_SECRET,
+            DS_VERSION_ID,
+            DS_OPERATOR,
+            DS_UPDATETIME
+        ) values (
+            #{DS_ID},
+            #{DS_ENAME},
+            #{DS_CNAME},
+            #{DS_TYPE},
+            #{DS_IP},
+            #{DS_PORT},
+            #{DS_USERNAME},
+            #{DS_PASSWORD},
+            #{DS_ENDPOINT},
+            #{DS_ACCESSKEY},
+            #{DS_ACCESS_SECRET},
+            #{DS_VERSION_ID},
+            #{DS_OPERATOR},
+            #{DS_UPDATETIME}
+        )
+    </insert>
+
+    <!--修改数据源-->
+    <update id="editDatasourceInfo" parameterType="com.zysj.label_manage.entity.DataSource">
+        update
+            tb_datasource
+        set
+            DS_ENAME = #{DS_ENAME},
+            DS_CNAME = #{DS_CNAME},
+            DS_TYPE = #{DS_TYPE},
+            DS_IP = #{DS_IP},
+            DS_PORT = #{DS_PORT},
+            DS_USERNAME = #{DS_USERNAME},
+            DS_PASSWORD = #{DS_PASSWORD},
+            DS_ENDPOINT = #{DS_ENDPOINT},
+            DS_ACCESSKEY = #{DS_ACCESSKEY},
+            DS_ACCESS_SECRET = #{DS_ACCESS_SECRET},
+            DS_VERSION_ID = #{DS_VERSION_ID},
+            DS_OPERATOR = #{DS_OPERATOR},
+            DS_UPDATETIME = #{DS_UPDATETIME}
+        where
+            DS_ID = #{DS_ID}
+    </update>
+
+
+    <!--获取数据源列表-->
+    <select id="getDatasourceList" resultType="java.util.Map">
+        select
+            DS_ID,
+            DS_ENAME,
+            DS_CNAME,
+            DS_TYPE,
+            DS_IP,
+            DS_PORT,
+            DS_USERNAME,
+            DS_PASSWORD,
+            DS_ENDPOINT,
+            DS_ACCESSKEY,
+            DS_ACCESS_SECRET,
+            DS_VERSION_ID,
+            DS_OPERATOR,
+            DS_UPDATETIME
+        from
+          tb_datasource
+    </select>
+    <!--获取数据库版本信息列表-->
+    <select id="getDatasourceEditionList" resultType="map" parameterType="String">
+         SELECT
+          DS_VERSION
+        FROM
+        td_datasource_version
+        WHERE DS_TYPE=#{DS_TYPE}
+    </select>
+    <!--获取数据库类型信息列表-->
+    <select id="getDatasourceTypeList" resultType="map" >
+        SELECT
+       ds_type_id,ds_type_name
+        FROM
+        td_datasource_type
+     </select>
+    <!--获取单个数据源信息-->
+    <select id="getDatasourceInfo" resultType="map" parameterType="String">
+        select
+            DS_ID,
+            DS_ENAME,
+            DS_CNAME,
+            DS_TYPE,
+            DS_IP,
+            DS_PORT,
+            DS_USERNAME,
+            DS_PASSWORD,
+            DS_ENDPOINT,
+            DS_ACCESSKEY,
+            DS_ACCESS_SECRET,
+            DS_VERSION_ID,
+            DS_OPERATOR,
+            DS_UPDATETIME
+        from
+            tb_datasource
+        where
+            DS_ID = #{DS_ID}
+    </select>
+    <!--获取模糊查询到的数据源英文名-->
+    <select id="getDatasource" resultType="map" parameterType="String">
+       SELECT DS_ID,DS_ENAME from tb_datasource WHERE DS_ENAME LIKE '%${name}%'
+    </select>
+</mapper>

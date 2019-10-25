@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.LabelsourceDao" >
+
+    <!--新增主体-->
+    <insert id="addSubjectSourceInfo" parameterType="com.zysj.label_manage.entity.TagObject">
+        insert into tb_tag_object (
+            OBJECT_ID,
+            OBJECT_CODE,
+            OBJECT_NAME,
+            OBJECT_CLASS_ID,
+            OBJECT_CLASS_NAME,
+            CREATE_P_ID,
+            CREATE_P_NAME,
+            CREATE_TIME,
+            DESCRIPTION,
+            OBJECT_TYPE,
+            MAIN_OBJECT_ID,
+            REF_OBJECT_ID
+        ) values (
+            #{OBJECT_ID},
+            #{OBJECT_CODE},
+            #{OBJECT_NAME},
+            #{OBJECT_CLASS_ID},
+            #{OBJECT_CLASS_NAME},
+            #{CREATE_P_ID},
+            #{CREATE_P_NAME},
+            #{CREATE_TIME},
+            #{DESCRIPTION},
+            #{OBJECT_TYPE},
+            #{MAIN_OBJECT_ID},
+            #{REF_OBJECT_ID}
+                  )
+    </insert>
+    <!--新增主体类目-->
+    <insert id="addLevelNodeInfo" parameterType="com.zysj.label_manage.entity.ObjectClass">
+        insert into td_tag_object_class (
+        OBJ_CLASS_ID,
+        OBJ_CLASS_NAME,
+        CREATE_P_ID,
+        CREATE_P_NAME,
+        CREATE_TIME,
+        DESCRIPTION,
+        PARENT_ID
+        ) values (
+        #{OBJ_CLASS_ID},
+        #{OBJ_CLASS_NAME},
+        #{CREATE_P_ID},
+        #{CREATE_P_NAME},
+        #{CREATE_TIME},
+        #{DESCRIPTION},
+        #{PARENT_ID}
+
+        )
+    </insert>
+
+    <select id="getlevelNode"  resultType="java.util.Map" parameterType="String">
+        SELECT
+        OBJ_CLASS_ID as OBJECT_CLASS_ID,
+        OBJ_CLASS_NAME as OBJECT_CLASS_NAME,
+        PARENT_ID
+        FROM
+        td_tag_object_class
+        WHERE PARENT_ID=#{OBJECT_CLASS_ID};
+
+    </select>
+    <!--获取主体源列表-->
+    <select id="getLabelsourceList" resultType="com.zysj.label_manage.entity.TagObject" parameterType="String">
+      SELECT
+	  a.*,
+	(SELECT COUNT(1) from tb_tag_object_table t where t.OBJECT_ID = a.OBJECT_ID) as TableNumber,
+	(SELECT COUNT(1) from tb_tag_object_tag t where t.OBJECT_ID = a.OBJECT_ID) as NumberOfTags
+
+     FROM
+	tb_tag_object a
+	WHERE
+	OBJECT_CLASS_ID=#{OBJECT_CLASS_ID}
+
+    </select>
+    <!--获取所有主体信息-->
+    <select id="getLabelSources" resultType="map">
+       SELECT OBJECT_ID,OBJECT_NAME FROM tb_tag_object
+    </select>
+    <!--获取单个主体信息-->
+    <select id="getLabelsourceInfo" resultType="map" parameterType="String">
+      SELECT
+	       a.*,
+	       COUNT( DISTINCT b.TABLE_ID ) TableNumber,
+	       COUNT( DISTINCT c.TAG_ID ) NumberOfTags
+        FROM
+	       tb_tag_object AS a,
+	       tb_tag_object_table AS b,
+	       tb_tag_object_tag AS c
+        WHERE
+	       a.OBJECT_ID = b.OBJECT_ID
+	     AND a.OBJECT_ID = c.OBJECT_ID
+         AND  a.OBJECT_ID = #{OBJECT_ID}
+    </select>
+    <!--判断主体下是否存在关系以及表-->
+    <select id="getRelationshipLabels" resultType="map" parameterType="String">
+    SELECT
+	   sum( objectTable )
+    FROM
+
+    (SELECT
+	count( * ) AS objectTable
+        FROM tb_tag_object
+          WHERE
+         MAIN_OBJECT_ID =#{objectId}or REF_OBJECT_ID=#{objectId}
+				 union all
+		SELECT count(*) as objectTable
+       FROM tb_tag_object_table
+          WHERE
+        OBJECT_ID=#{objectId})
+				as countObjectTable
+
+    </select>
+    <!--判断主体类目下是否存在子类目以及主体-->
+    <select id="getLevelNodeInfo" resultType="map" parameterType="String">
+      SELECT
+	   sum( objectTable )
+    FROM
+
+    (SELECT
+	count( * ) AS objectTable
+        FROM tb_tag_object
+          WHERE
+         OBJECT_CLASS_ID =#{objectClassId}
+				 union all
+		SELECT count(*) as objectTable
+       FROM td_tag_object_class
+          WHERE
+        PARENT_ID=#{objectClassId})
+				as countObjectTable
+
+    </select>
+    <!--删除主体-->
+    <delete id="deleteLabelSourceInfo" parameterType="String">
+        DELETE FROM tb_tag_object WHERE OBJECT_ID=#{objectId}
+    </delete>
+    <!--删除主体类目-->
+    <delete id="deleteLevelNodeInfo" parameterType="String">
+        DELETE FROM td_tag_object_class WHERE OBJ_CLASS_ID=#{objectClassId}
+    </delete>
+</mapper>

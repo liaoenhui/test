@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.TableManagementDao" >
+
+    <!--新增主体下的关系表-->
+    <insert id="addTableRelationsInfo" parameterType="com.zysj.label_manage.entity.ObjectTable">
+        insert into tb_tag_object_table (
+        TABLE_ID,
+        `TABLE_NAME`,
+        TABLE_CNAME,
+        DATASOURCE_ID,
+        DATASOURCE_NAME,
+        OBJECT_ID,
+        OBJECT_NAME,
+        IS_MAIN_TABLE,
+        INNER_RELATION_REF,
+        CREATE_P_ID,
+        CREATE_P_NAME,
+        CREATE_TIME,
+        DESCRIPTION
+        ) values (
+        #{TABLE_ID},
+        #{TABLE_NAME},
+        #{TABLE_CNAME},
+        #{DATASOURCE_ID},
+        #{DATASOURCE_NAME},
+        #{OBJECT_ID},
+        #{OBJECT_NAME},
+        #{IS_MAIN_TABLE},
+        #{INNER_RELATION_REF},
+        #{CREATE_P_ID},
+        #{CREATE_P_NAME},
+        #{CREATE_TIME},
+        #{DESCRIPTION}
+        )
+    </insert>
+    <!--新增主体下的标签表-->
+    <insert id="addTagTableInfo" parameterType="com.zysj.label_manage.entity.TagObjectTag">
+        insert into tb_tag_object_tag (
+        TAG_ID,
+        TAG_NAME,
+        TAG_CODE,
+        TAG_CLASS_ID,
+        TAG_CLASS_NAME,
+        DATASOURCE_ID,
+        DATASOURCE_NAME,
+        TABLE_ID,
+        `TABLE_NAME`,
+        CS_ID,
+        `COLUMN_NAME`,
+        OBJECT_ID,
+        OBJECT_NAME,
+        DATA_TYPE,
+        dic_id,
+        DESCRIPTION,
+        IS_MAIN_TAG,
+        REF_OBJECT_ID,
+        CREATE_P_ID,
+        CREATE_P_NAME,
+        CREATE_TIME
+        ) values (
+        #{TAG_ID},
+        #{TAG_NAME},
+        #{TAG_CODE},
+        #{TAG_CLASS_ID},
+        #{TAG_CLASS_NAME},
+        #{DATASOURCE_ID},
+        #{DATASOURCE_NAME},
+        #{TABLE_ID},
+        #{TABLE_NAME},
+        #{CS_ID},
+        #{COLUMN_NAME},
+        #{OBJECT_ID},
+        #{OBJECT_NAME},
+        #{DATA_TYPE},
+        #{dic_id},
+        #{DESCRIPTION},
+        #{IS_MAIN_TAG},
+        #{REF_OBJECT_ID},
+        #{CREATE_P_ID},
+        #{CREATE_P_NAME},
+        #{CREATE_TIME}
+        )
+    </insert>
+
+    <!--获取主体下表的关联信息-->
+    <select id="getTableRelationsInfo" resultType="map" parameterType="String">
+        SELECT
+	    a.*,b.OBJECT_CODE,
+		(SELECT COUNT(1) from tb_tag_object_tag t where t.TABLE_ID = a.TABLE_ID AND t.OBJECT_ID=a.OBJECT_ID) as LabelNumber
+       FROM
+	  tb_tag_object_table a
+	  LEFT JOIN tb_tag_object b ON b.OBJECT_ID = a.OBJECT_ID
+		  WHERE
+	     a.OBJECT_ID =#{OBJECT_ID}
+
+    </select>
+    <!--获取主体(关联表)的关系主体id-->
+    <select id="getRelatedSubject"  resultType="map" parameterType="String" >
+        SELECT
+	t.MAIN_OBJECT_ID,
+	t.REF_OBJECT_ID
+FROM
+	tb_tag_object t
+WHERE
+	t.OBJECT_ID = #{objectId}
+    </select>
+    <!--根据关系表中的主体找到相应的主体 -->
+    <select id="getRelatedSubjects"  resultType="map" parameterType="String" >
+       SELECT OBJECT_ID,OBJECT_CODE,OBJECT_NAME,OBJECT_TYPE FROM tb_tag_object WHERE OBJECT_ID in (#{MAIN_OBJECT_ID},#{REF_OBJECT_ID})
+    </select>
+    <!--根据关系表中的主体找到相应的主体 -->
+    <select id="getMainTagInfo"  resultType="map" parameterType="String" >
+       SELECT * FROM tb_tag_object_tag WHERE TABLE_ID=#{tableId} AND REF_OBJECT_ID=#{objectId}
+    </select>
+    <!--获取主体下是否有主表-->
+    <select id="getWhetherMasterTable" resultType="map" parameterType="String">
+       SELECT
+	  COUNT( 1 ) IS_MAIN_TABLE
+        FROM
+	   tb_tag_object_table
+       WHERE
+	   IS_MAIN_TABLE = 0
+	  AND OBJECT_ID = #{OBJECT_ID}
+
+    </select>
+    <!--获取表下是否有主标签-->
+    <select id="getWhetherMasterTag" resultType="map" parameterType="String">
+          SELECT
+        COUNT( 1 ) IS_MAIN_TAG
+        FROM
+        tb_tag_object_tag
+        WHERE
+        IS_MAIN_TAG = 1
+        AND TABLE_ID = #{tagId}
+        AND OBJECT_ID=#{objectId}
+
+    </select>
+    <!--根据所选数据源获取模糊查询到的表名-->
+    <select id="getvagueTable" resultType="map" parameterType="String">
+        SELECT TABLE_ID,TABLE_ENAME from tb_datasource_table WHERE  DS_ID=#{dataId} AND TABLE_ENAME LIKE '%${tableName}%'
+    </select>
+    <!--查询主体标识-->
+    <select id="getSubjectRelations" resultType="map" >
+        SELECT
+	      INNER_ID,
+	      INNER_NAME
+         FROM
+	      tb_tag_object_inner
+
+    </select>
+    <!--查询标签类目下拉-->
+    <select id="getTagTableInfo" resultType="map" >
+        SELECT
+        TAG_CLASS_ID,
+        TAG_CLASS_NAME
+        FROM
+        td_tag_object_tag_class
+
+    </select>
+    <!--根据所选表获取模糊查询到的字段名-->
+    <select id="getTableField" resultType="map" parameterType="String">
+        SELECT
+	       CS_ENAME
+        FROM
+	       tb_datasource_table_column
+        WHERE
+	       TABLE_ID = #{TABLE_ID}
+    </select>
+    <!--解绑标签数据-->
+    <delete id="deleteTagTableInfo" parameterType="String">
+        DELETE FROM tb_tag_object_tag WHERE TAG_ID=#{TagId}
+    </delete>
+    <!--解绑表判断是否存在标签-->
+    <select id="getTableInfo" resultType="map" parameterType="String">
+         SELECT
+        *
+	 FROM
+	 tb_tag_object_tag
+	 WHERE
+	 TABLE_ID=#{TableId}
+    </select>
+    <!--解绑表标签数据-->
+    <delete id="deleteTableInfo" parameterType="String">
+        DELETE FROM tb_tag_object_table WHERE TABLE_ID=#{TableId}
+    </delete>
+    <!--根据表id 查出是否已绑定的标签-->
+    <select id="getRelatedTags" resultType="map" parameterType="String">
+     SELECT
+        *
+        FROM
+          vb_tag_column
+		 WHERE
+		  TABLE_ID= #{surfaceId}
+		and
+		  isbound= #{isBounds}
+		<if test="objectId !=null and objectId !=''"  >
+            AND
+            object_id=#{objectId}
+        </if>
+      </select>
+    <!--根据表id 查出是否已绑定的标签-->
+    <select id="getVagueTags" resultType="map" parameterType="String">
+        SELECT
+        *
+        FROM
+        vb_tag_column
+        WHERE
+        TABLE_ID= #{surfaceId}
+        and
+        CS_ENAME LIKE '%${tableName}%'
+    </select>
+    <!--根据所选数据源获取模糊查询到的表名-->
+    <select id="getSearchTable" resultType="map" parameterType="String">
+        SELECT  *  from tb_tag_object_table WHERE  OBJECT_ID=#{SubjectId} AND `TABLE_NAME` LIKE '%${tableName}%'
+    </select>
+</mapper>

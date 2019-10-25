@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.RelationshipDao" >
+
+
+    <!--新增关系-->
+    <insert id="addRelationShipSourceInfo" parameterType="com.zysj.label_manage.entity.ObjectInner">
+        insert into tb_tag_object_inner (
+        INNER_ID,
+        INNER_NAME,
+        INNER_CODE,
+        TABLE_ID,
+       `TABLE_NAME`,
+        OBJECT_COLUMN,
+        REF_COLUMN,
+        OBJECT_ID,
+        OBJECT_NAME,
+       DESCRIPTION,
+       CREATE_P_ID,
+       CREATE_P_NAME,
+       CREATE_TIME
+        ) values (
+        #{INNER_ID},
+        #{INNER_NAME},
+        #{INNER_CODE},
+        #{TABLE_ID},
+        #{TABLE_NAME},
+        #{OBJECT_COLUMN},
+        #{REF_COLUMN},
+        #{OBJECT_ID},
+        #{OBJECT_NAME},
+        #{DESCRIPTION},
+        #{CREATE_P_ID},
+        #{CREATE_P_NAME},
+        #{CREATE_TIME}
+        )
+    </insert>
+
+    <!--获取主体下的关系信息的主题标识-->
+    <select id="getInsideMainIdentification" resultType="map"  parameterType="String">
+       select a.OBJECT_ID,c.TAG_NAME from tb_tag_object_inner a
+       left join tb_tag_object_table b on a.INNER_ID = b.INNER_RELATION_REF
+       left join tb_tag_object_tag c on b.table_id = c.TABLE_ID
+       WHERE a.OBJECT_ID = #{objectId}
+			 and
+	      b.IS_MAIN_TABLE=0
+			 and
+		  c.IS_MAIN_TAG=1
+       group by a.inner_id
+
+    </select>
+
+    <!--获取主体下的关系信息-->
+    <select id="getInternalRelationsInfo" resultType="map"  parameterType="String">
+
+     select a.*,count(c.TAG_ID) TagCount from tb_tag_object_inner a
+       left join tb_tag_object_table b on a.INNER_ID = b.INNER_RELATION_REF
+       left join tb_tag_object_tag c on b.table_id = c.TABLE_ID
+       WHERE a.OBJECT_ID = #{objectId}
+       group by a.inner_id
+
+    </select>
+    <!--获取主体下是否有主表-->
+    <select id="getWhetherField" resultType="map" parameterType="String">
+         SELECT
+        COUNT( 1 ) IS_INNER_CODE
+        FROM
+        tb_tag_object_inner
+        WHERE
+         INNER_CODE = #{INNER_CODE}
+
+    </select>
+
+</mapper>

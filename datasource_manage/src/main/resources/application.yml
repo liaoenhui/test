@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: local
+
+static.serviceType: proxy
+
+# 解决通过serviceId 找不到服务
+eureka:
+  instance:
+    prefer-ip-address: true
+
+ribbon:
+  eureka:
+    enabled: true
+
+#访问超时时间 6s
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 6000
+logging:
+  level: debug

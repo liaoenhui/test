@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zysj.label_manage.dao.CircleGroupDao" >
+
+    <!--返回主体下的关系-->
+    <select id="getSubjectTagCategoryList" resultType="map" parameterType="String">
+        SELECT * FROM tb_tag_object
+          WHERE
+         MAIN_OBJECT_ID = #{obJctId}or REF_OBJECT_ID=#{obJctId}
+    </select>
+
+    <!--返回关系下的主标签-->
+    <select id="getLabelOfRelationship" resultType="map" parameterType="String">
+       SELECT * FROM tb_tag_object_tag WHERE OBJECT_ID=#{OBJECT_ID} AND IS_MAIN_TAG=1
+        <choose>
+            <when test="mt !=0 ">
+                AND  REF_OBJECT_ID !=#{obJctId}
+            </when>
+            <otherwise>
+                AND  REF_OBJECT_ID =#{obJctId}
+            </otherwise>
+        </choose>
+
+    </select>
+    <!--返回标签下关联的主体-->
+    <select id="getTagSubjectCategoryList" resultType="map" parameterType="String">
+  SELECT * FROM tb_tag_object WHERE OBJECT_ID =( SELECT REF_OBJECT_ID FROM tb_tag_object_tag
+          WHERE OBJECT_ID= #{relationshipId}
+            AND  REF_OBJECT_ID !=#{subjectId})
+  </select>
+
+    <!--新增群体-->
+    <insert id="addGroup" parameterType="com.zysj.label_manage.entity.TbGroup">
+        insert into tb_group (
+        GROUP_ID,
+        GROUP_NAME,
+        OBJECT_ID,
+        CREATE_P_ID,
+        CREATE_P_NAME,
+        CREATE_TIME,
+        DESCRIPTION,
+        API_CREATED,
+        API_ID,
+        CONDITIONS
+        ) values (
+        #{group_ID},
+        #{group_NAME},
+        #{object_ID},
+        #{create_P_ID},
+        #{create_P_NAME},
+        #{create_TIME},
+        #{description},
+        #{api_CREATED},
+        #{api_ID},
+        #{conditions}
+        )
+    </insert>
+
+    <!--修改群体-->
+    <update id="updateEditTbGroupInfo" parameterType="com.zysj.label_manage.entity.TbGroup">
+        update
+        tb_group
+        set
+        GROUP_NAME = #{group_NAME},
+        OBJECT_ID = #{object_ID},
+        CREATE_P_ID = #{create_P_ID},
+        CREATE_P_NAME = #{create_P_NAME},
+        CREATE_TIME = #{create_TIME},
+        DESCRIPTION = #{description},
+        API_CREATED = #{api_CREATED},
+        API_ID = #{api_ID},
+        CONDITIONS = #{conditions}
+        where
+        GROUP_ID = #{group_ID}
+    </update>
+
+    <!--获取模糊查询到的群体名称-->
+    <select id="getTbGroupLikeName" resultType="map" parameterType="String">
+        SELECT api_CREATED,api_ID,conditions,create_P_ID,create_P_NAME,create_TIME,description,group_ID,group_NAME,object_ID,relavent_OBJECT_COUNT from tb_group WHERE group_NAME LIKE '%${groupName}%'
+    </select>
+    <!--删除群体-->
+    <delete id="deleteTbGroupInfo" parameterType="String">
+        DELETE FROM tb_group WHERE GROUP_ID=#{groupId}
+    </delete>
+</mapper>

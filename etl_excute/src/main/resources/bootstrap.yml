@@ -1,0 +1,28 @@
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+spring:
+  cloud:
+    consul:
+      config:
+        data-key: configuration
+        defaultContext: dev
+        enabled: true
+        format: YAML
+        prefix: config
+        watch:
+          enabled: true
+      discovery:
+        enabled: true
+        healthCheckInterval: 10s
+        prefer-ip-address: true
+        register: true
+      host: 47.100.122.117
+      port: 8500
+  profiles:
+    include: db,dev,etl-windows-local,local,zookeeper,test

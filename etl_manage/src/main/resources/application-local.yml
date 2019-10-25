@@ -1,0 +1,84 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:18801/eureka/
+
+
+server:
+  port: 18807
+spring:
+  application:
+    name: etl_manage  #全部小写
+
+#访问超时时间 6s
+#  ribbon:
+#    ReadTimeout: 6000
+#    ConnectTimeout: 3000
+#  hystrix:
+#    command:
+#      default:
+#        execution:
+#          isolation:
+#            thread:
+#              timeoutInMilliseconds: 6000
+
+
+#####################################################################################################
+
+  datasource:
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://47.100.123.80:3306/tag_system?useUnicode=true&characterEncoding=UTF-8
+          username: root
+          password: Zysj@123
+#  jpa:
+#    hibernate:
+#      #ddl-auto: create #ddl-auto:设为create表示每次都重新建表
+#      ddl-auto: update #ddl-auto:设为update表示每次都不会重新建表
+#    show-sql: true
+
+
+  # mongodb 配置
+#  data:
+#    mongodb:
+#      database: tag_system
+#      host: 127.0.0.1
+#      port: 27017
+
+
+#####################################################################################################
+
+# mybatis mapper xml 配置
+mybatis-plus:
+  type-aliases-package: com.zysj.etl_manage.entity
+  mapper-locations: classpath*:/mybatis/mapper/*.xml
+
+
+
+
+#####################################################################################################
+# 打印日志
+#logging:
+#  level:
+#    root: INFO
+#    org.hibernate: INFO
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+#    com.springms: DEBUG
+
+#logging:
+#  level:
+#    org.springframework.data.mongodb.core.MongoTemplate: DEBUG #配置MongoTemplate日志
+######################################################################################################
+
+
+
+feign:
+  hystrix:
+    enabled: true
+
+
+
+#user-secret:
+#  ribbon:
+#    listOfServers: http://101.37.91.207:8811
+
