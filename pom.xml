@@ -7,7 +7,8 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.3.RELEASE</version>
 		<packaging>pom</packaging>
-		<relativePath/> <!-- lookup parent from repository -->
+
+		<!-- <relativePath/> lookup parent from repository -->
 	</parent>
 	<groupId>com.zysj</groupId>
 	<artifactId>tagsystem_parent</artifactId>
