@@ -16,7 +16,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-        <module>bus</module>
+        <module>bus_manage</module>
     </modules>
 
 	<properties>
