@@ -17,6 +17,7 @@
 
 	<modules>
         <module>bus_manage</module>
+        <module>dssync</module>
     </modules>
 
 	<properties>
